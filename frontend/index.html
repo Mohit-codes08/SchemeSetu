@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SchemeSetu - AI Multistep Grid Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <canvas id="bgCanvas"></canvas>
+
+  <div class="tricolor-strip"></div>
+  <div class="top-gov-bar">
+    <div class="emblem-txt">
+      <span class="animated-emblem">🏛️</span>
+      <span data-en="Government of India Initiative • SIH 2026" data-hi="भारत सरकार पहल • SIH 2026">Government of India Initiative • SIH 2026</span>
+    </div>
+    <div class="support-txt" data-en="Live AI Eligibility Matrix" data-hi="लाइव एआई पात्रता ग्रिड">Live AI Eligibility Matrix</div>
+  </div>
+
+  <header class="navbar">
+    <div class="brand-wrapper">
+      <div class="ashok-icon">🇮🇳</div>
+      <div class="brand-info">
+        <div class="logo">Scheme<span>Setu</span></div>
+        <div class="portal-tag" data-en="Interactive 6-Stage Affirmation Grid" data-hi="6-स्तरीय इंटरैक्टिव योजना सत्यापन">Interactive 6-Stage Affirmation Grid</div>
+      </div>
+    </div>
+    <div class="nav-right">
+      <span class="badge-sih">SIH26092</span>
+      <button id="langToggle" class="lang-btn" type="button">🌐 हिंदी</button>
+    </div>
+  </header>
+
+  <div class="grid-hero-header">
+    <div class="hero-chip">✨ AI-Powered Profiling Engine</div>
+    <h1 class="gradient-text-hero" data-en="Complete Your Citizen Profile" data-hi="अपना नागरिक प्रोफ़ाइल पूरा करें">Complete Your Citizen Profile</h1>
+    <p class="hero-subtext" data-en="Fill each card or use voice input 🎙️ to discover Central & State welfare schemes" data-hi="कार्ड भरें या बोलकर 🎙️ केंद्र व राज्य सरकार की कल्याणकारी योजनाएं खोजें">Fill each card or use voice input 🎙️ to discover Central & State welfare schemes</p>
+  </div>
+
+  <main class="grid-container">
+    <form id="schemeForm" class="cards-grid">
+
+      <!-- Card 1: Name -->
+      <div class="grid-card active-card" id="card-1" data-card="1">
+        <div class="card-status-badge"><span class="badge-dot"></span> <span class="badge-status-txt">Step 1 Active</span></div>
+        <div class="card-icon-bubble">👤</div>
+        <div class="card-tagline" data-en="Citizen Identity" data-hi="नागरिक पहचान">Citizen Identity</div>
+        <h3 class="card-title-interactive" data-en="Applicant full name (as on Aadhaar)" data-hi="आवेदक का पूरा नाम (आधार अनुसार)">Applicant full name (as on Aadhaar)</h3>
+        <div class="input-wrap voice-wrap">
+          <input type="text" name="name" id="input-name" required placeholder="e.g. Ramesh Kumar" autocomplete="off">
+          <button type="button" class="voice-input-btn" onclick="startVoiceInput('input-name', this)">🎙️</button>
+        </div>
+        <button type="button" class="card-next-btn" onclick="nextCard(1)">
+          <span data-en="Confirm & Proceed →" data-hi="पुष्टि करें और आगे बढ़ें →">Confirm & Proceed →</span>
+        </button>
+      </div>
+
+      <!-- Card 2: Occupation (Select OR Type/Voice) -->
+      <div class="grid-card locked-card" id="card-2" data-card="2">
+        <div class="lock-overlay"><span class="lock-icon">🔒</span></div>
+        <div class="card-status-badge"><span class="badge-dot"></span> <span class="badge-status-txt">Step 2 Locked</span></div>
+        <div class="card-icon-bubble">🛠️</div>
+        <div class="card-tagline" data-en="Livelihood & Trade" data-hi="व्यवसाय एवं पेशा">Livelihood & Trade</div>
+        <h3 class="card-title-interactive" data-en="Primary occupation / trade" data-hi="प्राथमिक व्यवसाय या पेशा चुनें">Primary occupation / trade</h3>
+        
+        <div class="input-wrap">
+          <select id="occupation-select" onchange="handleOccupationSelect(this.value)">
+            <option value="">Select your primary occupation...</option>
+            <option value="Farmer / Agriculture">🌾 Farmer / Agriculture (किसान / खेती)</option>
+            <option value="Artisan / Craftsman">🪡 Traditional Artisan / Craftsman (कारीगर / शिल्पकार)</option>
+            <option value="Street Vendor / Hawker">🛒 Street Vendor / Small Hawker (रेहड़ी-पटरी विक्रेता)</option>
+            <option value="Small Shopkeeper / Retailer">🏪 Small Shopkeeper / Retailer (छोटा दुकानदार)</option>
+            <option value="Student / Youth">🎓 Student / Unemployed Youth (छात्र / युवा)</option>
+            <option value="Women Entrepreneur">👩‍💼 Women Entrepreneur / Self Help (महिला उद्यमी)</option>
+            <option value="Custom">✍️ Custom / Other (Type or Speak 🎙️)</option>
+          </select>
+        </div>
+
+        <div class="input-wrap voice-wrap">
+          <input type="text" name="occupation" id="input-occupation" required placeholder="Select above or type/speak here..." autocomplete="off">
+          <button type="button" class="voice-input-btn" onclick="startVoiceInput('input-occupation', this)">🎙️</button>
+        </div>
+
+        <div class="card-btn-row">
+          <button type="button" class="card-back-btn" onclick="prevCard(2)">←</button>
+          <button type="button" class="card-next-btn" onclick="nextCard(2)">
+            <span data-en="Confirm & Proceed →" data-hi="पुष्टि करें और आगे बढ़ें →">Confirm & Proceed →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 3: Income -->
+      <div class="grid-card locked-card" id="card-3" data-card="3">
+        <div class="lock-overlay"><span class="lock-icon">🔒</span></div>
+        <div class="card-status-badge"><span class="badge-dot"></span> <span class="badge-status-txt">Step 3 Locked</span></div>
+        <div class="card-icon-bubble">💰</div>
+        <div class="card-tagline" data-en="Income Assessment" data-hi="आय का विवरण">Income Assessment</div>
+        <h3 class="card-title-interactive" data-en="Annual household income (₹)" data-hi="वार्षिक पारिवारिक आय (₹)">Annual household income (₹)</h3>
+        <div class="input-wrap voice-wrap">
+          <input type="number" name="income" id="input-income" required placeholder="e.g. 120000" autocomplete="off">
+          <button type="button" class="voice-input-btn" onclick="startVoiceInput('input-income', this)">🎙️</button>
+        </div>
+        <div class="card-btn-row">
+          <button type="button" class="card-back-btn" onclick="prevCard(3)">←</button>
+          <button type="button" class="card-next-btn" onclick="nextCard(3)">
+            <span data-en="Confirm & Proceed →" data-hi="पुष्टि करें और आगे बढ़ें →">Confirm & Proceed →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 4: Location -->
+      <div class="grid-card locked-card" id="card-4" data-card="4">
+        <div class="lock-overlay"><span class="lock-icon">🔒</span></div>
+        <div class="card-status-badge"><span class="badge-dot"></span> <span class="badge-status-txt">Step 4 Locked</span></div>
+        <div class="card-icon-bubble">📍</div>
+        <div class="card-tagline" data-en="Regional Domicile" data-hi="निवास स्थान">Regional Domicile</div>
+        <h3 class="card-title-interactive" data-en="Location (City, State)" data-hi="स्थान (शहर, राज्य)">Location (City, State)</h3>
+        <div class="input-wrap voice-wrap">
+          <input type="text" name="location" id="input-location" required placeholder="e.g. Kanpur, Uttar Pradesh" autocomplete="off">
+          <button type="button" class="voice-input-btn" onclick="startVoiceInput('input-location', this)">🎙️</button>
+        </div>
+        <div class="card-btn-row">
+          <button type="button" class="card-back-btn" onclick="prevCard(4)">←</button>
+          <button type="button" class="card-next-btn" onclick="nextCard(4)">
+            <span data-en="Confirm & Proceed →" data-hi="पुष्टि करें और आगे बढ़ें →">Confirm & Proceed →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 5: Category -->
+      <div class="grid-card locked-card" id="card-5" data-card="5">
+        <div class="lock-overlay"><span class="lock-icon">🔒</span></div>
+        <div class="card-status-badge"><span class="badge-dot"></span> <span class="badge-status-txt">Step 5 Locked</span></div>
+        <div class="card-icon-bubble">📋</div>
+        <div class="card-tagline" data-en="Social Affirmation" data-hi="सामाजिक श्रेणी">Social Affirmation</div>
+        <h3 class="card-title-interactive" data-en="Social Category (As per Caste Cert.)" data-hi="सामाजिक श्रेणी (जाति प्रमाणपत्र अनुसार)">Social Category (As per Caste Cert.)</h3>
+        <div class="input-wrap">
+          <select name="category" id="input-category" required>
+            <option value="">Choose category...</option>
+            <option value="General">General / Open</option>
+            <option value="OBC">OBC (Other Backward Class)</option>
+            <option value="SC">SC (Scheduled Caste)</option>
+            <option value="ST">ST (Scheduled Tribe)</option>
+            <option value="EWS">EWS (Economically Weaker Section)</option>
+          </select>
+        </div>
+        <div class="card-btn-row">
+          <button type="button" class="card-back-btn" onclick="prevCard(5)">←</button>
+          <button type="button" class="card-next-btn" onclick="nextCard(5)">
+            <span data-en="Confirm & Proceed →" data-hi="पुष्टि करें और आगे बढ़ें →">Confirm & Proceed →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 6: Dynamic Business Model (Select OR Type/Voice) -->
+      <div class="grid-card locked-card" id="card-6" data-card="6">
+        <div class="lock-overlay"><span class="lock-icon">🚀</span></div>
+        <div class="card-status-badge"><span class="badge-dot"></span> <span class="badge-status-txt">Final Step</span></div>
+        <div class="card-icon-bubble">💼</div>
+        <div class="card-tagline" data-en="Assistance Scope" data-hi="व्यवसाय एवं सहायता योजना">Assistance Scope</div>
+        <h3 class="card-title-interactive" data-en="Planned Business / Project Scope" data-hi="प्रस्तावित व्यवसाय या सहायता का प्रकार">Planned Business / Project Scope</h3>
+        
+        <div class="input-wrap">
+          <select id="business-select" onchange="handleBusinessSelect(this.value)">
+            <option value="">Select planned business goal...</option>
+          </select>
+        </div>
+
+        <div class="input-wrap voice-wrap" id="custom-business-wrap">
+          <input type="text" name="businessType" id="input-businessType" required placeholder="Select from above or type here..." autocomplete="off">
+          <button type="button" class="voice-input-btn" onclick="startVoiceInput('input-businessType', this)">🎙️</button>
+        </div>
+
+        <div class="card-btn-row">
+          <button type="button" class="card-back-btn" onclick="prevCard(6)">←</button>
+          <button type="submit" class="card-submit-btn">
+            <span data-en="⚡ Match Schemes via AI" data-hi="⚡ AI से योजनाएं खोजें">⚡ Match Schemes via AI</span>
+          </button>
+        </div>
+      </div>
+
+    </form>
+
+    <div id="loader" class="loader-wrap hidden">
+      <div class="emblem-pulse">🏛️</div>
+      <div class="loader-title" data-en="AI Matching in Progress..." data-hi="AI द्वारा योजनाओं का मिलान जारी है...">AI Matching in Progress...</div>
+      <div class="loader-sub" data-en="Scanning Central & State Ministry databases for eligible benefits" data-hi="केंद्र एवं राज्य सरकार के योजना डेटाबेस की जांच हो रही है">Scanning Central & State Ministry databases for eligible benefits</div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

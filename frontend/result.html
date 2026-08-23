@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eligible Schemes - SchemeSetu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <canvas id="bgCanvas"></canvas>
+
+  <div class="tricolor-strip"></div>
+  <div class="top-gov-bar">
+    <div class="emblem-txt"><span class="animated-emblem">🏛️</span> Government of India Initiative • AI Scheme Matcher</div>
+    <div>Verified Portal • SIH 2026</div>
+  </div>
+
+  <header class="navbar">
+    <div class="brand-wrapper">
+      <div class="ashok-icon">🇮🇳</div>
+      <div>
+        <div class="logo">Scheme<span>Setu</span></div>
+        <div class="portal-tag">Empowering Marginalized Entrepreneurs</div>
+      </div>
+    </div>
+    <div class="nav-right">
+      <span class="badge-sih">SIH26092</span>
+    </div>
+  </header>
+
+  <main class="result-page">
+    <div class="result-hero">
+      <div class="verified-seal">✨ <span id="sealText">100% Eligibility Match Found</span> ✨</div>
+      <h1 id="resultHeading" class="gradient-text-hero">Matched Government Schemes</h1>
+      <p id="resultSub" class="hero-subtext">Central & State schemes curated based on your socioeconomic profile, occupation, and business goals.</p>
+    </div>
+
+    <div id="schemeCards" class="scheme-list"></div>
+
+    <div class="bottom-action-bar">
+      <a href="index.html" class="back-btn-link" id="searchAgainBtn">🔄 Check Another Applicant Profile</a>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    const schemesData = sessionStorage.getItem("schemeResult");
+    const name = sessionStorage.getItem("userName") || "Applicant";
+    const lang = sessionStorage.getItem("userLang") || "en";
+
+    // Natural Soft Female Conversational Voice Engine
+    function explainSchemeNatural(index) {
+      const schemes = JSON.parse(sessionStorage.getItem("schemeResult"));
+      const scheme = schemes[index];
+      if (!scheme) return;
+
+      window.speechSynthesis.cancel();
+
+      const docsText = (scheme.documents && scheme.documents.length > 0) 
+        ? scheme.documents.join(", ") 
+        : "Aadhaar Card, Income Certificate, and Bank Passbook";
+
+      const stepsText = (scheme.steps && scheme.steps.length > 0)
+        ? scheme.steps.map((s, i) => `Step ${i + 1}: ${s}`).join(". ")
+        : "Visit the official government portal to apply.";
+
+      const isState = scheme.schemeType === "State";
+      const authorityTxt = isState ? (scheme.stateName ? `राज्य सरकार (${scheme.stateName})` : "राज्य सरकार") : "भारत सरकार (केंद्रीय)";
+
+      let conversationalScript = "";
+
+      if (lang === "hi") {
+        conversationalScript = `नमस्ते ${name}! आपके लिए योजना है: ${scheme.name}। यह एक ${authorityTxt} की योजना है। `
+          + `यह योजना आपके लिए इसलिए है क्योंकि ${scheme.eligibility}। `
+          + `आवेदन करने के लिए आवश्यक दस्तावेज़ हैं: ${docsText}। `
+          + `आवेदन करने का तरीका इस प्रकार है: ${stepsText}। `
+          + `आप नीचे दिए गए लाल बटन पर क्लिक करके सीधे आधिकारिक पोर्टल पर आवेदन कर सकते हैं। धन्यवाद!`;
+      } else {
+        conversationalScript = `Hello ${name}! A great scheme for you is ${scheme.name}. This is a ${scheme.schemeType || 'Central'} Government scheme. `
+          + `Here is why you are eligible: ${scheme.eligibility}. `
+          + `The documents you will need are: ${docsText}. `
+          + `To apply, follow these simple steps: ${stepsText}. `
+          + `You can directly apply by clicking the official portal button below.`;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(conversationalScript);
+      utterance.rate = 0.95;
+      utterance.pitch = 1.25;
+
+      const voices = window.speechSynthesis.getVoices();
+      const femaleVoice = voices.find(v => {
+        const vName = v.name.toLowerCase();
+        const isLangMatch = lang === "hi" 
+          ? (v.lang.includes("hi") || vName.includes("hindi")) 
+          : (v.lang.includes("en-IN") || v.lang.includes("en-US") || v.lang.includes("en-GB"));
+        const isFemale = vName.includes("female") || vName.includes("google हिन्दी") || vName.includes("swara") || vName.includes("kalpana") || vName.includes("zira") || vName.includes("samantha") || vName.includes("heera") || vName.includes("natural");
+        return isLangMatch && isFemale;
+      }) || voices.find(v => lang === "hi" ? v.lang.includes("hi") : v.lang.includes("en"));
+
+      if (femaleVoice) utterance.voice = femaleVoice;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    }
+
+    if (!schemesData) {
+      window.location.href = "index.html";
+    } else {
+      const schemes = JSON.parse(schemesData);
+
+      if (lang === "hi") {
+        document.getElementById("sealText").textContent = "सत्यापित एवं योग्य योजनाएं";
+        document.getElementById("resultHeading").textContent = `नमस्ते ${name}, आपके लिए चुनी गई योजनाएं`;
+        document.getElementById("resultSub").textContent = "आपकी श्रेणी, आय, स्थान और व्यवसाय के आधार पर केंद्र व राज्य सरकार की योजनाएं:";
+        document.getElementById("searchAgainBtn").textContent = "🔄 नया प्रोफाइल चेक करें";
+      } else {
+        document.getElementById("resultHeading").textContent = `Hi ${name}, here are your matched schemes`;
+      }
+
+      const container = document.getElementById("schemeCards");
+      const matchScores = [98, 86, 74, 62, 50]; 
+
+      schemes.forEach((scheme, index) => {
+        const card = document.createElement("div");
+        card.className = "scheme-card-creative animated-pop-card";
+        card.style.animationDelay = `${index * 0.18}s`;
+
+        const isTopMatch = index === 0;
+        const currentScore = matchScores[index] || 55;
+        
+        const whyTitle = lang === "hi" ? "🎯 यह योजना आपके लिए क्यों है?" : "🎯 Why This Scheme is For You";
+        const docsTitle = lang === "hi" ? "📄 आवश्यक दस्तावेज़ (Required Documents)" : "📄 Required Documents Checklist";
+        const stepsTitle = lang === "hi" ? "📝 आवेदन करने के चरण (Step-by-Step)" : "📝 How to Apply (Step-by-Step Guide)";
+        const applyBtnText = lang === "hi" ? "आधिकारिक पोर्टल पर आवेदन करें ↗" : "Apply on Official Govt Portal ↗";
+        const explainBtnText = lang === "hi" ? "🗣️ पूरी योजना समझें (AI Guide)" : "🗣️ Explain Entire Scheme (AI Guide)";
+        
+        // Central vs State Badging
+        const isState = scheme.schemeType === "State";
+        const badgeText = isState 
+          ? (scheme.stateName ? `🏛️ STATE SCHEME (${scheme.stateName.toUpperCase()})` : "🏛️ STATE GOVT SCHEME")
+          : "🇮🇳 CENTRAL GOVT SCHEME";
+        const badgeClass = isState ? "scheme-badge-state" : "scheme-badge-central";
+
+        const portalUrl = scheme.officialPortalUrl || "https://www.myscheme.gov.in";
+
+        const docsList = (scheme.documents || ["Aadhaar Card", "Income Certificate", "Caste Certificate", "Bank Passbook"])
+          .map(doc => `<span class="doc-pill hover-float-pill">📌 ${doc}</span>`)
+          .join("");
+
+        const stepsHtml = (scheme.steps || [])
+          .map(step => `<li><span>${step}</span></li>`)
+          .join("");
+
+        const topBadgeHtml = isTopMatch ? `<div class="top-match-badge">🏆 Top Recommendation</div>` : '';
+        const scoreColor = currentScore > 80 ? "#10b981" : currentScore > 60 ? "#ff9933" : "#0284c7";
+
+        card.innerHTML = `
+          ${topBadgeHtml}
+          <div class="card-top-row">
+            <div class="scheme-avatar animated-pulse-bubble">${scheme.icon || "📜"}</div>
+            <div class="scheme-heading-box">
+              <h3 class="card-scheme-title">${scheme.name}</h3>
+              <div class="badge-row">
+                <span class="${badgeClass}">${badgeText}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="match-score-container">
+            <div class="score-header">
+              <span class="score-label">⚡ AI Eligibility Confidence</span>
+              <span class="score-percent" style="color: ${scoreColor}">${currentScore}%</span>
+            </div>
+            <div class="score-track">
+              <div class="score-fill" style="width: ${currentScore}%; background-color: ${scoreColor};"></div>
+            </div>
+          </div>
+
+          <div class="why-box hover-glow-section">
+            <div class="section-tag">${whyTitle}</div>
+            <div class="why-desc">${scheme.eligibility}</div>
+          </div>
+
+          <div class="docs-box hover-glow-section">
+            <div class="docs-tag">${docsTitle}</div>
+            <div class="docs-grid">${docsList}</div>
+          </div>
+
+          <div class="steps-box hover-glow-section">
+            <div class="steps-tag">${stepsTitle}</div>
+            <ol class="steps-timeline">${stepsHtml}</ol>
+          </div>
+
+          <div class="card-action-footer">
+            <button type="button" class="voice-read-btn" onclick="explainSchemeNatural(${index})">
+              ${explainBtnText}
+            </button>
+            <a href="${portalUrl}" target="_blank" rel="noopener noreferrer" class="apply-portal-btn glow-bounce-btn">
+              ${applyBtnText}
+            </a>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+  </script>
+
+</body>
+</html>
