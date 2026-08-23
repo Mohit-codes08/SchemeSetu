@@ -231,10 +231,10 @@ if (form) {
     document.querySelector(".grid-hero-header").style.display = "none";
     loader.classList.remove("hidden");
 
-    // Dynamic backend URL (Localhost par localhost use karega, Render deploy par render url)
+    // Dynamic backend URL
     const BACKEND_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
       ? "http://localhost:5000"
-      : "https://schemesetu-backend.onrender.com";
+      : "https://schemesetu-szxi.onrender.com";
 
     try {
       const res = await fetch(`${BACKEND_URL}/api/schemes/match`, {
